@@ -1,0 +1,27 @@
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
+public class MainClass {
+    public static void main(String[] args) {
+        Cafe cf = new Cafe();
+        Statistics stat = new Statistics(cf);
+        Staff s1 = new Staff("Owner", cf,stat);
+        Thread ths1 = new Thread(s1);
+        CustomerGenerator cg = new CustomerGenerator(cf);
+        Clock clk = new Clock(cg,s1);
+        Staff s2 = new Staff("Waiter", cf, stat);
+        Thread ths2 = new Thread(s2);
+        
+        ths2.start();
+        ths1.start();
+        clk.start();
+        cg.start();
+        
+        try{
+            ths1.join();
+            ths2.join();
+        }catch(Exception e){}
+        
+    }
+}
