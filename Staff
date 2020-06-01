@@ -1,0 +1,41 @@
+class Staff implements Runnable{
+    public boolean closingtime = false;
+    private volatile boolean flag = true;
+    Cafe cf;
+    String name;
+    Statistics stat;
+    
+    public Staff(String name,Cafe cf,Statistics stat){
+        this.name = name;
+        this.cf = cf;
+        this.stat = stat;
+    }
+
+    public synchronized void setClosingTime(){
+        closingtime = true;
+        System.out.println("We are closed now. Sorry!"); 
+    }
+    
+    public void run(){
+            try{
+            Thread.sleep(2000);
+            }catch(Exception e){}
+            while(!closingtime){
+                cf.serve(name);
+            }
+            if(closingtime){
+                setClosingTime();
+                
+                try{
+                Thread.sleep(3500);
+                synchronized(this){
+                    Statistics stat = new Statistics(cf);
+                    Thread thstat = new Thread(stat);
+                    thstat.start();  
+                }
+            }catch(Exception e){}
+            return;
+            
+        }
+    }
+}
