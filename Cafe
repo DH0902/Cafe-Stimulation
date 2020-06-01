@@ -1,0 +1,117 @@
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
+class Cafe {
+    //int chair = 10;
+    int n = 0;
+    int ndrink1 = 0;
+    int ndrink2 = 0;
+    boolean isEmpty = false;
+    CustomerGenerator cg;
+    List<Customer> listCustomer;
+    Semaphore semchair = new Semaphore(10);
+    
+    public Cafe(){
+        listCustomer = new LinkedList<Customer>();
+    }
+    
+    public void add(Customer customer){
+        System.out.println("Customer :" + customer.getName() + " entering the shop");
+        synchronized(listCustomer){
+            if(semchair.availablePermits() == 0){
+                System.out.println("There are no empty seats now!");
+                System.out.println("Customer :" + customer.getName() + " is leaving.");
+                return;
+            }
+            if(semchair.availablePermits() <= 10 && semchair.availablePermits() >0){
+                ((LinkedList<Customer>)listCustomer).offer(customer);
+                System.out.println("Customer :" + customer.getName() + " got the seat.");
+                try {
+                    semchair.acquire(1);
+                } catch (Exception e) {
+                }
+            }
+            if(listCustomer.size() == 1){
+                listCustomer.notify();
+            }
+        }
+    } 
+    
+    public void serve(String name){
+        Customer customer;
+        synchronized(listCustomer){
+            while(listCustomer.size() == 0){
+                System.out.println("Staff is waiting customer.");
+                try{
+                    listCustomer.wait();
+                }catch(Exception e){}
+            }
+            System.out.println("FOUND A CUSTOMER IN QUEUE.");
+            customer = (Customer)((LinkedList<?>)listCustomer).poll();
+        }
+        int ordernumber = new Random().nextInt(1);
+        //System.out.println(ordernumber);
+        try{
+            System.out.println("Customer is viewing menu....");
+            Thread.sleep(1000);
+            if(ordernumber == 0){
+                System.out.println(name + " is serving " + customer.getName() + " and " + customer.getName() + " orders Cappuccino.");
+                ndrink1++;
+            }else if(ordernumber == 1){
+                System.out.println(name + " is serving " + customer.getName() + "and " + customer.getName() + " orders Fruit Juice");
+                ndrink2++;
+            }
+        }catch(Exception e){}
+        craft(name,ordernumber,customer);
+        leave(customer);
+    }
+    
+    public synchronized void craft(String name,int number,Customer customer){
+        System.out.println(name + " IS PREPARING " + customer.getName() + " ORDER");
+        if(number == 0 ){
+            try{
+                System.out.println(name + " IS TAKING GUP");
+                Thread.sleep(100);
+                System.out.println(name + " IS OBTAINING COFFEE");
+                Thread.sleep(100);
+                System.out.println(name + " IS OBTAINING MILK");
+                Thread.sleep(100);
+                System.out.println(name + " IS MIXING CAPPUCCINO");
+                Thread.sleep(100);
+                System.out.println("CAPPUCCINO IS DONE!");
+            }catch(Exception e){}
+        }else{
+            try{
+                System.out.println(name + " IS TAKING GLASSS");
+                Thread.sleep(100);
+                System.out.println(name + " IS OBTAINING FRUIT FOUNDATION TAP");
+                Thread.sleep(100);
+                System.out.println(name + " IS FILLING GLASS");
+                Thread.sleep(100);
+                System.out.println("FRUIT JUICE IS DONE!");
+            }catch(Exception e){};
+        }
+    }
+    
+    public void leave(Customer customer){
+        System.out.println("Customer :" + customer.getName() + " is drinking.");
+        try{
+            Thread.sleep(2000);
+        }catch(Exception e){}
+        System.out.println("Customer :" + customer.getName() + " is leaving.");
+        semchair.release(1);
+        n ++;
+    }
+    
+    public boolean check(){
+        if(semchair.availablePermits() == 10){
+            isEmpty = true;
+        }
+        return isEmpty;
+    }
+}
