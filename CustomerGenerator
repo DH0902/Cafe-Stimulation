@@ -1,0 +1,40 @@
+
+import java.util.Random;
+
+class CustomerGenerator extends Thread{
+    public boolean closingtime = false;
+    Cafe cf;
+    Random r = new Random();
+    
+    public CustomerGenerator(Cafe cf){
+        this.cf = cf;
+    }
+    
+    public synchronized void setClosingtime(){
+        closingtime = true;
+        System.out.println(" New Customer : Bar is closed? OK");
+        System.out.println(" New Customer is leaving.");
+    }
+    
+    public void run(){
+        while(!closingtime){
+            Customer customer = new Customer(cf);
+            Thread thcustomer = new Thread(customer);
+            customer.setName("Customer "+thcustomer.getId());
+            thcustomer.start();
+            try{
+                int low = 3;
+                int high = 5;
+                int random = r.nextInt(high - low) + low;
+                Thread.sleep(random*1000);
+            }catch(Exception e){}
+        }
+        if(closingtime){
+            try{
+                setClosingtime();
+                Thread.sleep(5000);
+            }catch(Exception e){}
+            return;
+        }
+    }
+}
