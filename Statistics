@@ -1,0 +1,25 @@
+class Statistics implements Runnable{
+    Cafe cf;
+    int price1 = 7;
+    int price2 = 6;
+    int sum = 0;
+    
+    public Statistics(Cafe cf){
+        this.cf = cf;
+    }
+    public void run(){
+        System.out.println("Generating Report.....");
+        try{
+            Thread.sleep(3000);
+        }catch(Exception e){}
+        sum = ((price1 * cf.ndrink1) + (price1 * cf.ndrink2));
+        
+        System.out.println("Total Number of Customer Served : " + cf.n);
+        System.out.println("Total Number of Cappuccino Served : " + cf.ndrink1);
+        System.out.println("Total Number of Fruit Juice Served : " + cf.ndrink2);
+        System.out.println("Profit Earned from Cappuccino : " + "RM " + price1 * cf.ndrink1);
+        System.out.println("Profit Earned from fruit Juice : " + "RM " + price2 * cf.ndrink2);
+        System.out.println("Gross Income : " + "RM " +sum);
+    }
+    
+}
