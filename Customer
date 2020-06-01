@@ -1,0 +1,24 @@
+class Customer implements Runnable{
+    String name;
+    Cafe cf;
+    
+    public Customer(Cafe cf){
+        this.cf = cf;
+    }
+    
+    public String getName(){
+        return name;
+    }
+    
+    public void setName(String name){
+        this.name = name;
+    }
+    
+    private synchronized void goBar(){
+        cf.add(this);
+    }
+    
+    public void run(){
+        goBar();
+    }
+}
