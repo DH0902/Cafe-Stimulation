@@ -1,0 +1,30 @@
+public class Clock extends Thread{
+    private CustomerGenerator cg;
+    private Staff s;
+    
+    public Clock(CustomerGenerator cg, Staff s){
+        this.cg = cg;
+        this.s = s;
+    }
+    
+    public synchronized void NotifyLASTORDER(){
+        System.out.println("CLOCK : Last Order!");
+    }
+    
+    public synchronized void NotifyCLOSE(){
+        System.out.println("CLOCK : BAR IS CLOSING.");
+        cg.closingtime = true;
+        s.closingtime = true;
+    }
+    
+    public void run(){
+        try{
+            System.out.println("CAFE IS START NOW !");
+            Thread.sleep(180000);
+            NotifyLASTORDER();
+            Thread.sleep(20000);
+            NotifyCLOSE();
+            
+        }catch(Exception e){}
+    }
+}
